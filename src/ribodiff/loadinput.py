@@ -13,23 +13,37 @@ class LoadInputs(object):
     def __init__(self, opts):
         self.fileNameExper = opts.exptOutline
         self.fileNameCount = opts.cntFile
-        self.experiment= np.empty([1, 1], dtype='str')
-        self.exper     = np.empty([1, 1], dtype='str')
-        self.experRibo = np.empty([1, 1], dtype='str')
-        self.experRna  = np.empty([1, 1], dtype='str')
-        self.experCtl  = np.empty([1, 1], dtype='str')
-        self.experTrt  = np.empty([1, 1], dtype='str')
-        self.nameConA  = np.empty([1, 1], dtype='str')
-        self.nameConB  = np.empty([1, 1], dtype='str')
-        self.idxRibo = np.empty([1, 1], dtype='int')
-        self.idxRna  = np.empty([1, 1], dtype='int')
-        self.idxCtl  = np.empty([1, 1], dtype='int')
-        self.idxTrt  = np.empty([1, 1], dtype='int')
-        self.geneIDs = np.empty([1, 1], dtype='str')
-        self.countRibo = np.empty([1, 1], dtype='int')
-        self.countRna  = np.empty([1, 1], dtype='int')
-        self.headerRibo = np.empty([1, 1], dtype='str')
-        self.headerRna  = np.empty([1, 1], dtype='str')
+        #self.experiment= np.empty([1, 1], dtype='str')
+        self.exper     = None
+        self.experRibo = None
+        self.experRna  = None
+        self.experCtl  = None
+        self.experTrt  = None
+        #self.exper     = np.empty([1, 1], dtype='str')
+        #self.experRibo = np.empty([1, 1], dtype='str')
+        #self.experRna  = np.empty([1, 1], dtype='str')
+        #self.experCtl  = np.empty([1, 1], dtype='str')
+        #self.experTrt  = np.empty([1, 1], dtype='str')
+        #self.nameConA  = np.empty([1, 1], dtype='str')
+        #self.nameConB  = np.empty([1, 1], dtype='str')
+        self.idxRibo = None
+        self.idxRna  = None
+        self.idxCtl  = None
+        self.idxTrt  = None
+        self.geneIDs = None
+        self.countRibo = None
+        self.countRna  = None
+        self.headerRibo = None
+        self.headerRna  = None
+        #self.idxRibo = np.empty([1, 1], dtype='int')
+        #self.idxRna  = np.empty([1, 1], dtype='int')
+        #self.idxCtl  = np.empty([1, 1], dtype='int')
+        #self.idxTrt  = np.empty([1, 1], dtype='int')
+        #self.geneIDs = np.empty([1, 1], dtype='str')
+        #self.countRibo = np.empty([1, 1], dtype='int')
+        #self.countRna  = np.empty([1, 1], dtype='int')
+        #self.headerRibo = np.empty([1, 1], dtype='str')
+        #self.headerRna  = np.empty([1, 1], dtype='str')
         self.libSizesRibo = np.empty([1, 1], dtype='float')
         self.libSizesRna  = np.empty([1, 1], dtype='float')
         self.matrix = np.empty([1, 1], dtype='int')
@@ -68,47 +82,72 @@ class LoadInputs(object):
     def parse_expt(self):
         """ Read the experiment description file """
 
-        self.experiment = np.loadtxt(self.fileNameExper, dtype=str, delimiter=',', skiprows=1)
-        self.exper = self.experiment.copy()
+        # What about using pandas instead?
+        #self.experiment = np.loadtxt(self.fileNameExper, dtype=str, delimiter=',', skiprows=1)
+        #self.exper = self.experiment.copy()
+        self.exper = np.loadtxt(self.fileNameExper, dtype=str, delimiter=',', skiprows=1)
 
-        seqType = np.unique(self.exper[:, 1])
-        if seqType.size != 2:
-            sys.stderr.write('Error: only two types of sequencing keyword are allowed. Please check the second column in experimental outline file.\n')
+        # Locating lines corresponding to the two sequence types #
+        ##########################################################
+        seqTypes = np.unique(self.exper[:, 1])
+        if seqTypes.size != 2:
+            sys.stderr.write("Error: only two types of sequencing keyword are allowed. "
+                             "Please check the second column in experimental outline file.\n")
             sys.exit()
-        for eachSeqType in seqType.tolist():
-            if re.search(r'^Ribo-Seq$', eachSeqType, re.I):
-                idxRibo = self.exper[:, 1] == eachSeqType
-            if re.search(r'^RNA-Seq$', eachSeqType, re.I):
-                idxRna = self.exper[:, 1] == eachSeqType
+        for seqType in seqTypes:
+            if re.search(r'^Ribo-Seq$', seqType, re.I):
+                idxRibo = self.exper[:, 1] == seqType
+            if re.search(r'^RNA-Seq$', seqType, re.I):
+                idxRna = self.exper[:, 1] == seqType
         try:
             idxRibo
         except NameError:
-            sys.stderr.write('Error: in the second column in experimental outline file, please use \'Ribo-Seq\' to indicate which replicates are ribosome profiling data.\n')
+            sys.stderr.write("Error: in the second column in experimental outline file, "
+                             "please use \'Ribo-Seq\' to indicate which replicates are ribosome profiling data.\n")
             sys.exit()
 
         try:
             idxRna
         except NameError:
-            sys.stderr.write('Error: in the second column in experimental outline file, please use \'RNA-Seq\' to indicate which replicates are RNA-Seq data.\n')
+            sys.stderr.write("Error: in the second column in experimental outline file, "
+                             "please use \'RNA-Seq\' to indicate which replicates are RNA-Seq data.\n")
             sys.exit()
 
-        condition, condIdx = np.unique(self.exper[:, 2], return_index=True)
-        if condition.size != 2:
-            sys.stderr.write('Error: only two conditions are allowed. Please check the last column in experimental outline file.\n')
-            sys.exit()
-        if condIdx[0] == 0:
-            idxCtl = self.exper[:, 2] == condition[0]
-            idxTrt = self.exper[:, 2] == condition[1]
-            self.nameCondA = condition[0]
-            self.nameCondB = condition[1]
-        else:
-            idxCtl = self.exper[:, 2] == condition[1]
-            idxTrt = self.exper[:, 2] == condition[0]
-            self.nameCondA = condition[1]
-            self.nameCondB = condition[0]
-
+        # Standardizing sequence types #
+        ################################
         self.exper[idxRibo,1] = 'Ribo'
         self.exper[idxRna, 1] = 'mRna'
+
+        # Identifying the condition names #
+        ###################################
+        try:
+            self.nameCondA, self.nameCondB = np.unique(self.exper[:, 2])
+        except ValueError:
+            sys.stderr.write("Error: only two conditions are allowed. "
+                             "Please check the last column in experimental outline file.\n")
+            sys.exit()
+        # Identifying the condition names, and at what lines they first occur #
+        #######################################################################
+        #conditions, condIdx = np.unique(self.exper[:, 2], return_index=True)
+        #if conditions.size != 2:
+        #    sys.stderr.write('Error: only two conditions are allowed. Please check the last column in experimental outline file.\n')
+        #    sys.exit()
+        # I think this will always be true
+        #if condIdx[0] == 0:
+        #    idxCtl = self.exper[:, 2] == conditions[0]
+        #    idxTrt = self.exper[:, 2] == conditions[1]
+        #    self.nameCondA = conditions[0]
+        #    self.nameCondB = conditions[1]
+        #else:
+        #    idxCtl = self.exper[:, 2] == conditions[1]
+        #    idxTrt = self.exper[:, 2] == conditions[0]
+        #    self.nameCondA = conditions[1]
+        #    self.nameCondB = conditions[0]
+        idxCtl = self.exper[:, 2] == self.nameCondA
+        idxTrt = self.exper[:, 2] == self.nameCondB
+
+        # Standardizing condition names #
+        #################################
         self.exper[idxCtl, 2] = 'ConditionA'
         self.exper[idxTrt, 2] = 'ConditionB'
 
@@ -131,7 +170,7 @@ class LoadInputs(object):
         idxTrt  = np.in1d(header, self.experTrt ).nonzero()[0]
 
         if idxRibo.size != self.experRibo.size or idxRna.size != self.experRna.size or idxCtl.size != self.experCtl.size or idxTrt.size != self.experTrt.size:
-            sys.stderr.write('Error: At least one sample or replicate\'s name in count file and experimental outline file does not match.\n')
+            sys.stderr.write("Error: At least one sample or replicate\'s name in count file and experimental outline file does not match.\n")
             sys.exit()
 
         idxRiboCtl = np.intersect1d(idxRibo, idxCtl)
