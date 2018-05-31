@@ -14,15 +14,7 @@ class LoadInputs(object):
         self.fileNameExper = opts.exptOutline
         self.fileNameCount = opts.cntFile
         self.parse_expt()
-        self.idxRibo = None
-        self.idxRna  = None
-        self.idxCtl  = None
-        self.idxTrt  = None
-        self.geneIDs = None
-        self.countRibo = None
-        self.countRna  = None
-        self.headerRibo = None
-        self.headerRna  = None
+        self.read_count()
         #self.idxRibo = np.empty([1, 1], dtype='int')
         #self.idxRna  = np.empty([1, 1], dtype='int')
         #self.idxCtl  = np.empty([1, 1], dtype='int')

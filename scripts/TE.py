@@ -29,10 +29,11 @@ def main():
     import ribodiff.plot as pl
 
     print '*'*25
-    FileIn = ld.LoadInputs(opts)
+    #FileIn = ld.LoadInputs(opts)
     # Can be made part of object instantiation:
     #data = FileIn.parse_expt()
-    data = FileIn.read_count()
+    #data = FileIn.read_count()
+    data = ld.LoadInputs(opts)
     print 'Read input files: Done.\n%i Gene(s) to be tested.' % data.geneIDs.size
 
     print '*'*25
