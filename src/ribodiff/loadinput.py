@@ -15,15 +15,6 @@ class LoadInputs(object):
         self.fileNameCount = opts.cntFile
         self.parse_expt()
         self.read_count()
-        #self.idxRibo = np.empty([1, 1], dtype='int')
-        #self.idxRna  = np.empty([1, 1], dtype='int')
-        #self.idxCtl  = np.empty([1, 1], dtype='int')
-        #self.idxTrt  = np.empty([1, 1], dtype='int')
-        #self.geneIDs = np.empty([1, 1], dtype='str')
-        #self.countRibo = np.empty([1, 1], dtype='int')
-        #self.countRna  = np.empty([1, 1], dtype='int')
-        #self.headerRibo = np.empty([1, 1], dtype='str')
-        #self.headerRna  = np.empty([1, 1], dtype='str')
         self.libSizesRibo = np.empty([1, 1], dtype='float')
         self.libSizesRna  = np.empty([1, 1], dtype='float')
         self.matrix = np.empty([1, 1], dtype='int')
@@ -144,6 +135,8 @@ class LoadInputs(object):
         with open(self.fileNameCount, 'r') as FileIn:
             header = np.array(FileIn.readline().strip().split('\t'), dtype=str)
 
+        # Determine what columns correspond to the different library categories #
+        #########################################################################
         idxRibo = np.in1d(header, self.experRibo).nonzero()[0]
         idxRna  = np.in1d(header, self.experRna ).nonzero()[0]
         idxCtl  = np.in1d(header, self.experCtl ).nonzero()[0]
@@ -158,8 +151,11 @@ class LoadInputs(object):
         idxRnaCtl  = np.intersect1d(idxRna,  idxCtl)
         idxRnaTrt  = np.intersect1d(idxRna,  idxTrt)
 
-        self.headerRibo = header[np.hstack([idxRiboCtl, idxRiboTrt])]
-        self.headerRna  = header[np.hstack([idxRnaCtl,  idxRnaTrt ])]
+        # Does not seem to be used anywhere, and likely simpler to compute:
+        #self.headerRibo = header[idxRibo]
+        #self.headerRna  = header[idxRna]
+        #self.headerRibo = header[np.hstack([idxRiboCtl, idxRiboTrt])]
+        #self.headerRna  = header[np.hstack([idxRnaCtl,  idxRnaTrt ])]
 
         geneIDs = np.loadtxt(self.fileNameCount, dtype=str, skiprows=1, usecols=(0,))
         self.geneIDs = geneIDs.reshape(geneIDs.size, 1)
