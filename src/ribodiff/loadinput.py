@@ -13,19 +13,7 @@ class LoadInputs(object):
     def __init__(self, opts):
         self.fileNameExper = opts.exptOutline
         self.fileNameCount = opts.cntFile
-        #self.experiment= np.empty([1, 1], dtype='str')
-        self.exper     = None
-        self.experRibo = None
-        self.experRna  = None
-        self.experCtl  = None
-        self.experTrt  = None
-        #self.exper     = np.empty([1, 1], dtype='str')
-        #self.experRibo = np.empty([1, 1], dtype='str')
-        #self.experRna  = np.empty([1, 1], dtype='str')
-        #self.experCtl  = np.empty([1, 1], dtype='str')
-        #self.experTrt  = np.empty([1, 1], dtype='str')
-        #self.nameConA  = np.empty([1, 1], dtype='str')
-        #self.nameConB  = np.empty([1, 1], dtype='str')
+        self.parse_expt()
         self.idxRibo = None
         self.idxRna  = None
         self.idxCtl  = None

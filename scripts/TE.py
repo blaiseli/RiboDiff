@@ -30,7 +30,8 @@ def main():
 
     print '*'*25
     FileIn = ld.LoadInputs(opts)
-    data = FileIn.parse_expt()
+    # Can be made part of object instantiation:
+    #data = FileIn.parse_expt()
     data = FileIn.read_count()
     print 'Read input files: Done.\n%i Gene(s) to be tested.' % data.geneIDs.size
 
