@@ -160,21 +160,23 @@ class LoadInputs(object):
         geneIDs = np.loadtxt(self.fileNameCount, dtype=str, skiprows=1, usecols=(0,))
         self.geneIDs = geneIDs.reshape(geneIDs.size, 1)
 
-        countRiboCtl = np.loadtxt(self.fileNameCount, dtype=int, skiprows=1, usecols=idxRiboCtl)
-        countRiboTrt = np.loadtxt(self.fileNameCount, dtype=int, skiprows=1, usecols=idxRiboTrt)
-        if idxRiboCtl.size == 1:
-            countRiboCtl = countRiboCtl.reshape(countRiboCtl.size, 1)
-        if idxRiboTrt.size == 1:
-            countRiboTrt = countRiboTrt.reshape(countRiboTrt.size, 1)
-        self.countRibo = np.hstack([countRiboCtl, countRiboTrt])
+        #countRiboCtl = np.loadtxt(self.fileNameCount, dtype=int, skiprows=1, usecols=idxRiboCtl)
+        #countRiboTrt = np.loadtxt(self.fileNameCount, dtype=int, skiprows=1, usecols=idxRiboTrt)
+        #if idxRiboCtl.size == 1:
+        #    countRiboCtl = countRiboCtl.reshape(countRiboCtl.size, 1)
+        #if idxRiboTrt.size == 1:
+        #    countRiboTrt = countRiboTrt.reshape(countRiboTrt.size, 1)
+        #self.countRibo = np.hstack([countRiboCtl, countRiboTrt])
+        self.countRibo = np.loadtxt(self.fileNameCount, dtype=int, skiprows=1, usecols=idxRibo)
 
-        countRnaCtl = np.loadtxt(self.fileNameCount, dtype=int, skiprows=1, usecols=idxRnaCtl)
-        countRnaTrt = np.loadtxt(self.fileNameCount, dtype=int, skiprows=1, usecols=idxRnaTrt)
-        if idxRnaCtl.size == 1:
-            countRnaCtl = countRnaCtl.reshape(countRnaCtl.size, 1)
-        if idxRnaTrt.size == 1:
-            countRnaTrt = countRnaTrt.reshape(countRnaTrt.size, 1)
-        self.countRna = np.hstack([countRnaCtl, countRnaTrt])
+        #countRnaCtl = np.loadtxt(self.fileNameCount, dtype=int, skiprows=1, usecols=idxRnaCtl)
+        #countRnaTrt = np.loadtxt(self.fileNameCount, dtype=int, skiprows=1, usecols=idxRnaTrt)
+        #if idxRnaCtl.size == 1:
+        #    countRnaCtl = countRnaCtl.reshape(countRnaCtl.size, 1)
+        #if idxRnaTrt.size == 1:
+        #    countRnaTrt = countRnaTrt.reshape(countRnaTrt.size, 1)
+        #self.countRna = np.hstack([countRnaCtl, countRnaTrt])
+        self.countRna = np.loadtxt(self.fileNameCount, dtype=int, skiprows=1, usecols=idxRna)
 
         self.idxRibo = np.arange(self.countRibo.shape[1])
         self.idxRna  = np.arange(self.countRna.shape[1]) + self.idxRibo.size
